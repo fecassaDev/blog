@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-Br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
+    <title>Fernando Cassiano - Blog</title>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="./assets/logo.svg" alt="Pet Alpha" />
+        <h1>Fernando Cassiano</h1>
+      </div>
+      <div class="links">
+        <a href="#">Home</a>
+        <a href="#">Artigos</a>
+        <a href="#">Cursos</a>
+        <a href="#">Ferramentas</a>
+        <a href="#">Sobre</a>
+      </div>
+      <svg
+        width="44"
+        height="18"
+        viewBox="0 0 44 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <line
+          class="line"
+          y1="1"
+          x2="44"
+          y2="1"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="9"
+          x2="27"
+          y2="9"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="17"
+          x2="11"
+          y2="17"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+      </svg>
+    </nav>
+    <header>
+      <p>DEVOPS</p>
+      <h2>Docker – Criando um container para API .Net (6.0)</h2>
+    </header>
+    <article>
+      <h3>Direto ao ponto</h3>
+      <p>
+        Nosso objetivo é criar uma API com .Net 6.0, criar uma imagem desta
+        aplicação, subir esta imagem no Docker Hub e criar um container a partir
+        desta imagem.
+      </p>
+      <h3>Pré requisitos</h3>
+      <p>
+        Antes vamos ver se este tutorial irá realmente te atender, mostrando as
+        ferramentas que utilizarei
+      </p>
+      <ul>
+        <li>Visual Studio Code</li>
+        <li>Dotnet SDK</li>
+        <li>Docker</li>
+      </ul>
+      <h3>Criar uma nova api</h3>
+      <p>
+        Nossa API tem um controlador chamado HelloWorld, uma ação GET e o
+        propósito simples de retornar a mensagem HelloWorld em sua saída.
+      </p>
+      <p>
+        Não é o objetivo deste artigo mostrar a construção desta API.
+        Entretanto, o código que utilizarei estará disponível no
+        <a href="https://github.com/fecassaDev/helloworld">Github</a>.
+      </p>
+      <h3>Testando nossa API</h3>
+      <p>
+        Para testar a api, usamos o terminal do pŕoprio Visual Studio Code e
+        digitamos o comando dotnet run.
+      </p>
+      <code
+        >fernando@fernando-System-Product-Name:~/repo/HelloWorld$ dotnet
+        run</code
+      >
+      <div class="attention">
+        <p>
+          Certifique-se se estar no diretório raiz da aplicação antes de
+          executar o comando
+        </p>
+      </div>
+      <p>
+        Ainda no terminal do Visual Studio Code, serão apresentados os endereços
+        de execução da aplicação. Pressione a tecla Ctrl do seu teclado e clique
+        sobre um dos endereços para visualizar o resultado da API no seu
+        navegador.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-1.png"
+          alt="dotnet run"
+        />
+        <figcaption><samp>Terminal do Visual Studio Code</samp></figcaption>
+      </figure>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-2.png"
+          alt="api em execução no navegador"
+        />
+        <figcaption>
+          <samp>Resultado na tela do navegador (Firefox)</samp>
+        </figcaption>
+      </figure>
+      <h3>Editando o arquivo Dockerfile</h3>
+      <p>
+        Na raiz da aplicação crie um novo arquivo como nome Dockerfile (este
+        arquivo não tem extensão) e copie o conteúdo abaixo:
+      </p>
+      <pre>
+# https://hub.docker.com/_/microsoft-dotnet
+  FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+  WORKDIR /app
+
+# copy csproj and restore as distinct layers
+  COPY *.csproj ./
+  RUN dotnet restore
+
+# copy everything else and build app
+  COPY . ./
+  RUN dotnet publish -c release -o out
+
+# final stage/image
+  FROM mcr.microsoft.com/dotnet/aspnet:6.0
+  WORKDIR /app
+  EXPOSE 80
+  COPY --from=build /app/out .
+  ENTRYPOINT ["dotnet", "HelloWorld.dll"]
+      </pre>
+      <p>
+        Estes arquivo está dividido em quatro partes (camadas), cada qual
+        iniciada por um comentário <strong>(#)</strong>
+      </p>
+      <ul>
+        <li><strong># https://hub.docker.com/_/microsoft-dotnet</strong></li>
+        <p>
+          Cria uma nova imagem base onde faremos o build da nossa aplciação.
+        </p>
+        <p>
+          Na instrução <strong>FROM</strong> utilizamos uma imagem que já tem as
+          ferramentas do sdk do dotnet. A imagem
+          <strong>mcr.microsoft.com/dotnet/sdk:6.0</strong> foi obtida a partir
+          da documentação da Microsoft que coloco ao final deste artigo.
+        </p>
+        <li><strong># copy csproj and restore as distinct layers</strong></li>
+        <p>
+          Copia o arquivo de projeto da api para a pasta raiz do container
+          intermediário e executa o comando dotnet restore (que utiliza Nuget)
+          para restaurar as dependências e ferramentas especificadas no arquivo
+          do projeto.
+        </p>
+        <li><strong># copy everything else and build app</strong></li>
+        <p>
+          Copia os demais arquivos para o container intermediário e executa o
+          comando <strong>dotnet publish</strong> para gerar uma versão de
+          release da aplicação na nova pasta out do container intermediário. (a
+          pasta <strong>out</strong> não é gerada na sua máquina local, é gerada
+          diretamente no container intermediário).
+        </p>
+        <li><strong># final stage/image</strong></li>
+        <p>As definições deste bloco constroem a imagem final.</p>
+        <p>
+          Criamos um nova imagem, desta vez utilizando apenas o
+          <strong>RUNTIME</strong> do dotnet, definimos o diretório de trabalho
+          <strong>/app</strong>, definimos a porta de “escuta” do contâiner
+          (porta <strong>80</strong>) e copiamos toda o código publicado no
+          diretórtio <strong>out</strong> do container intermediário para o
+          container atual (representado por “.” ao final do comando
+          <strong>COPY</strong>).
+        </p>
+        <p>
+          Finalmente, na última linha do arquivo, na instrução
+          <strong>ENTRYPPOINT</strong>, executamos o comando
+          <strong>dotnet run</strong> usando o argumento
+          <strong>HelloWorld.dll</strong> (que é o resultado da compilação do
+          projeto <strong>HelloWorld.csproj</strong>).
+        </p>
+      </ul>
+      <h3>Criar uma imagem</h3>
+      <p>
+        A partir do diretório raiz da aplicação, digite o comando docker build,
+        utilizando o argumento <strong>-t</strong> para nomear a imagem.
+      </p>
+      <code> docker build -t fecassa/helloworld . </code>
+      <p>
+        A execução do comando irá exibir o passo a passo da execução do arquivo
+        Dockerfile, conforme o exemplo abaixo:
+      </p>
+      <pre>
+Sending build context to Docker daemon  4.196MB
+Step 1/12 : FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+  ---> 907525206621
+Step 2/12 : WORKDIR /app
+  ---> Running in 03bd9464ce76
+Removing intermediate container 03bd9464ce76
+  ---> 7d97f9539848
+Step 3/12 : LABEL stage="intermediate"
+  ---> Running in 52ead8f1fabb
+Removing intermediate container 52ead8f1fabb
+  ---> 98a2cd492048
+Step 4/12 : COPY *.csproj ./
+  ---> e321d5fa6cad
+Step 5/12 : RUN dotnet restore
+  ---> Running in 626e967b812d
+  Determining projects to restore...
+  Restored /app/HelloWorld.csproj (in 3.13 sec).
+Removing intermediate container 626e967b812d
+  ---> f49a86f2d585
+Step 6/12 : COPY . ./
+  ---> c84ce4d1d6cf
+Step 7/12 : RUN dotnet publish -c release -o out
+  ---> Running in a2c9d11fe8f9
+Microsoft (R) Build Engine version 17.2.0+41abc5629 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/app/HelloMessage.cs(3,19): warning CS8618: Non-nullable property 'Message' must contain a non-null value when exiting constructor. Consider declaring the property as nullable. [/app/HelloWorld.csproj]
+  HelloWorld -> /app/bin/release/net6.0/HelloWorld.dll
+  HelloWorld -> /app/out/
+Removing intermediate container a2c9d11fe8f9
+  ---> 3c4a82ae095d
+Step 8/12 : FROM mcr.microsoft.com/dotnet/aspnet:6.0
+  ---> dcbb7a2af474
+Step 9/12 : WORKDIR /app
+  ---> Running in 367829573b63
+Removing intermediate container 367829573b63
+  ---> 3c2277e6a030
+Step 10/12 : EXPOSE 80
+  ---> Running in fba3f70e45c0
+Removing intermediate container fba3f70e45c0
+  ---> 7aa63537f078
+Step 11/12 : COPY --from=build /app/out .
+  ---> 4dc779980506
+Step 12/12 : ENTRYPOINT ["dotnet", "HelloWorld.dll"]
+  ---> Running in e943c3367f8c
+Removing intermediate container e943c3367f8c
+  ---> c4dbc9f102d7
+Successfully built c4dbc9f102d7
+Successfully tagged fecassa/helloworld:latest        
+      </pre>
+      <p>
+        A partir deste momento a imagem foi criada e já aparece na listagem de
+        imagens disponíveis em sua máquina.
+      </p>
+      <code
+        >fernando@fernando-System-Product-Name:~/repo/HelloWorld$ docker image
+        ls fecassa/helloworld</code
+      >
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-3.png"
+          alt="imagens docker"
+        />
+      </figure>
+      <p>Já temos uma imagem a partir da qual podemos criar um container.</p>
+      <p>
+        Mas executar um container a partir de uma imagem local não parece trazer
+        muitas vantagens. Então, vamos “subir” a nossa imagem para um
+        repositório a partir de onde outras pessoas também poderão executar a
+        nossa API.
+      </p>
+      <p>
+        Para isto utilizaremos o
+        <a href="https://hub.docker.com/">Dockerhub</a> .
+      </p>
+      <h3>Criar repositório no Dockerhub</h3>
+      <p>
+        Na página inicial do Dockerhub, crie um usuário e senha (ou efetue o
+        login)
+      </p>
+      <p>
+        Após o login, clique no menu Repositories e no botão
+        <strong>Create Repository</strong>.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-4.png"
+          alt="Dockerhub"
+        />
+      </figure>
+      <p>
+        Forneça um nome para sua imagem, uma descrição, mantenha a visibilidade
+        como pública e clique no botão <strong>Create</strong>.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-5.png"
+          alt="Dockerhub"
+        />
+      </figure>
+      <p>
+        Após clicar no botão <strong>Create</strong>, nosso repositório estará
+        criado.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-6.png"
+          alt="Dockerhub"
+        />
+      </figure>
+      <h3>Fazendo upload da nossa imagem para o repositório</h3>
+      <p>
+        De volta ao terminal da nossa máquina, iremos executar o comando docker
+        login para nos autenticar no Dockerhub
+      </p>
+      <div class="attention">
+        <p>
+          O terminal irá exibir algumas mensagens informando que esta forma de
+          autenticação é insegura, e que as credenciais informadas ficarão
+          armazenadas sem criptografia em um diretório da nossa máquina local.
+        </p>
+        <p>
+          Contanto que você informe as suas credenciais corretamente, isso não
+          impedirá o login.
+        </p>
+        <p>
+          Veremos como ajustar essa brecha de segurança em outra oportunidade
+        </p>
+      </div>
+      <p>
+        Execute o comando docker push, passando o nome e versão da imagem que
+        deseja fazer upload
+      </p>
+      <code>docker push fecassa/helloworld:latest</code>
+      <p>Saída esperada no terminal:</p>
+      <pre>
+The push refers to repository [docker.io/fecassa/helloworld]
+4dcd72115b74: Pushed 
+86aee86a3571: Pushed 
+8b099aa428a0: Pushed 
+e71686a49974: Pushed 
+aaf9b5a99495: Pushed 
+5c08ad95b842: Pushed 
+9c1b6dd6c1e6: Pushed 
+latest: digest: sha256:1fbcebae4cfcbe50b00f1fe17234c13a1527b93f60a057f62cede9476aa3292a size: 1788
+      </pre>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-7.png"
+          alt="Dockerhub"
+        />
+        <figcaption>
+          <samp>Imagem do repositório remoto depois de atualizado </samp>
+        </figcaption>
+      </figure>
+      <div class="attention">
+        <p>O nome da imagem deve coincidir com nome do reposítório remoto 😐</p>
+        <p>
+          Se estiverem diferentes, basta executar o comando docker tag passando
+          o nome e versão atual da imagem local e o novo nome (podendo manter o
+          número de versão) 😛
+        </p>
+      </div>
+      <h3>
+        Executar um container a partir de uma imagem em um repositório remoto
+      </h3>
+      <p>
+        A partir deste momento, nós podemos criar um container a partir da
+        imagem hospedada no Dockerhub usando qualquer outra máquina sem a
+        necessidade de instalação do <strong>runtime</strong> ou
+        <strong>sdk</strong> do <strong>dotnet</strong>.
+      </p>
+      <p>
+        A única coisa que precisamos nos certificar é que estas novas máquinas
+        tenham o docker instalado.
+      </p>
+      <p>
+        Se você pretente continuar usando a mesma máquina para seguir o passo a
+        passo deste roteiro, certifique-se de apagar a imagem local que criamos
+        nos passos anteriores usando o comando docker image rm (do contrário não
+        conseguiremos utilizar a imagem do repositório remoto).
+      </p>
+      <code>docker image rm fecassa/helloworld</code>
+      <p>
+        Para criar um container a partir da imagem no repositório remoto, insira
+        o comando <strong>docker run</strong>.
+      </p>
+      <code>docker run -d -p 8080:80 --name myapp fecassa/helloworld </code>
+      <p>Usamos os seguintes argumentos no comando:</p>
+      <ul>
+        <li>
+          <strong>-d</strong> para executar o container em modo
+          <strong>detached</strong>
+        </li>
+        <li>
+          <strong>-p</strong> para mapear a porta <strong>80</strong> do
+          container (a porta que usamos na instrução EXPOSE do Dockerfile) na
+          porta 8080 da máquina local
+        </li>
+        <li>
+          <strong>–name</strong> para nomear o container que será criado com o
+          nome <strong>myapp</strong>
+        </li>
+        <li>
+          e por último o nome da imagem que usaremos para criar o container,
+          <strong>“fecassa/helloworld“</strong>
+        </li>
+      </ul>
+      <p>
+        A primeira mensagem da execução do comando deve ser a mensagem:
+        <strong>Unable to find image "fecassa/helloworld:latest" locally</strong
+        >. O cursor vai ficar um tempo parado nesta mensagem e quer dizer que a
+        imagem não existe na máquina local. Depois de alguns segundos será feito
+        o dowload da imagem do DockerHub (que acabamos de fazer o upload) e o
+        comando seguirá para a construção do container.
+      </p>
+      <p>
+        Após a finalização do comando, execute a instrução
+        <strong>docker ps</strong> para exibir o container criado.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-8.png"
+          alt="Imagem docker criada"
+        />
+      </figure>
+      <p>
+        Abra o navegador e informe o endereço
+        <strong>http://localhost:8080/HelloWorld</strong>.
+      </p>
+      <figure>
+        <img
+          src="./docker-criando-um-container-para-api-net-6-0/image-9.png"
+          alt="Execução da imagem no navegador"
+        />
+      </figure>
+      <p><strong>Parabéns, seu container está em execução 🙂 .</strong></p>
+    </article>
+    <footer>
+      <script src="./js.js"></script>
+    </footer>
+  </body>
+</html>
