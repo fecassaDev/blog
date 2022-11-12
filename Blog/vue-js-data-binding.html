@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-Br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Blog do desenvolvedor Fernando Cassiano. Dicas sobre desenvolvimento front-end e mercado de tecnologia.">
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="shortcut icon"
+      href="../assets/favicon.ico"
+      type="image/x-icon"
+    />
+    <title>Fernando Cassiano - Blog</title>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="../assets/logo.svg" alt="Logo" />
+        <h1>Fernando Cassiano</h1>
+      </div>
+      <div class="links">
+        <a href="#">Home</a>
+        <a href="#">Artigos</a>
+        <a href="./livros.html">Livros</a>
+        <a href="#">Ferramentas</a>
+        <a href="#">Sobre</a>
+      </div>
+      <svg
+        width="44"
+        height="18"
+        viewBox="0 0 44 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <line
+          class="line"
+          y1="1"
+          x2="44"
+          y2="1"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="9"
+          x2="27"
+          y2="9"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="17"
+          x2="11"
+          y2="17"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+      </svg>
+    </nav>
+    <header>
+      <p>FRONT END</p>
+      <h2>Vue.js: Data binding</h2>
+      <div class="author">
+        <p>Escrito por <strong>Fernando Cassiano</strong></p>
+        <p>em 4 de Dezembro de 2021</p>
+      </div>
+    </header>
+    <article>
+      <p>
+        Neste artigo espero compartilhar um compilado das minhas primeiras aulas
+        de Vue.js. Estou deixando estas anotações para referência futura e
+        espero que também possam lhes ser úteis.
+      </p>
+      <div class="attention">
+        <p>
+          <strong>Atenção:</strong> Este artigo usa a versão 3.x do framework.
+          Tenha certeza de estar referenciando o endereço CDN correto em seu
+          projeto. Alguns dos recursos apresentados podem não funcionar em
+          versões anteriores.
+        </p>
+      </div>
+      <h3>Criar template e fazer referência ao endereço CDN</h3>
+      <ol>
+        <li>Criar os arquivo index.html e js.js</li>
+        <li>Referenciar os arquivos de script dentro do template html</li>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+        &lt;title&gt;Document&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id="myTemplate"&gt;
+            &lt;p&gt;{{HelloVueMessage}}&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;script src="https://unpkg.com/vue@next"p&gt&lt;/script&gt;
+        &lt;script src="js.js"&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;                         
+        </pre>
+        <li>
+          Criar a aplicação <strong>myApp</strong> no arquivo js.js com os
+          atributos HelloVueMessage e VueUrl.
+        </li>
+        <li>
+          Conectar a aplicação, myApp, com o elemento myTemplate (&lt;div
+          id=”myTemplate”&gt;).
+        </li>
+      </ol>
+      <h3>Data Binding</h3>
+      <p>
+        Nesta seção vamos ver como expor os atributos da aplicação no template.
+      </p>
+      <h4>Interpolação</h4>
+      <p>
+        Para criar um parágrafo no template com o conteúdo do atributo
+        HelloVueMessage, use os caracteres {{ }}. Esse método é conhecido como
+        interpolação.
+      </p>
+      <pre>
+&lt;body&gt;
+    &lt;div id="myTemplate"&gt;
+        &lt;p&gt;{{HelloVueMessage}}&lt;/p&gt;
+    &lt;/div&gt;    
+&lt;script src="https://unpkg.com/vue@next"&gt;&lt;/script&gt;
+&lt;script src="js.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/body&gt;        
+      </pre>
+      <div class="attention">
+        <p>
+          <strong>Atenção:</strong> Também podemos usar a forma simplificada,
+          omitindo a diretiva v-bind e usando apenas o sinal : (dois pontos),
+          conforme o trecho de código abaixo
+        </p>
+      </div>
+      <code> &lt;a :href="VueUrl"&gt;Vue.js website&lt;/a&gt; </code>
+      <h4>two way data binding</h4>
+      <p>
+        Para atualizar e exibir o conteúdo de um atributo em tempo real, utilize
+        a diretiva <strong>v-model</strong>.
+      </p>
+      <p>
+        Primeiro, crie o atributo <strong><i>VueName</i></strong> na aplicação:
+      </p>
+      <pre>
+const myApp = Vue.createApp({
+    data(){
+        return{
+            HelloVueMessage: "Hello Vue.js",
+            VueUrl: "https://v3.vuejs.org/",
+            VueName : ""           
+        };
+    }    
+}) ;
+    </pre
+      >
+      <p>
+        No template, crie um input com a diretiva <strong>v-model</strong> e
+        coloque o nome do atributo <strong>VueName</strong>. Crie um parágrafo
+        logo abaixo e use interpolação usando este mesmo atributo:
+      </p>
+      <pre>
+&lt;body&gt;
+    &lt;div id="myTemplate"&gt;
+        &lt;p&gt;{{HelloVueMessage}}&lt;/p&gt;
+        &lt;a v-bind:href="VueUrl"&gt;Vue.js website&lt;/a&gt; 
+        &lt;br&gt;
+        &lt;input type="text" v-Model = "VueName"&gt;       
+        &lt;p&gt;{{VueName}}&lt;/p&gt;
+    &lt;/div&gt;    
+    &lt;script src="https://unpkg.com/vue@next"&gt;&lt;/script&gt;
+    &lt;script src="js.js"&gt;&lt;/script&gt;
+&lt;/body&gt;        
+      </pre>
+      <p>
+        Abra a página <strong><i>index.html</i></strong> no navegador, digite qualquer coisa dentro do
+        input e delicie-se com o conteúdo do parágrafo sendo atualizado em tempo
+        real sem a necessidade de nenhum esforço adicional.
+      </p>
+      <img src="./media/wow.gif" alt="wow">
+    </article>
+    <footer>
+      <script src="../js.js"></script>
+    </footer>
+  </body>
+</html>

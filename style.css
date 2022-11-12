@@ -24,21 +24,32 @@ h2 {
   font-family: "Argonite";
 }
 
-p, ul, code, figure{
+p, ul, ol,li, code, figure{
   line-height: 1.5em;
   padding: 1rem 0;
 }
 
-p, li, h3{
+p, h4, li{
   font-size: 1.25rem;
+}
+
+h2{
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+h3{
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+h4{
+  font-style: oblique;
 }
 
 h2, h3{
   text-transform: uppercase;
-}
-
-h2{
-  font-size: 1.75rem;
+  padding: 1em 0;
 }
 
 li{
@@ -52,8 +63,17 @@ header {
   color: aliceblue;
   min-height: 25vh;
   height: 100%;
-  padding: 5%;;
+  padding: 5% 25%;
   text-align: center;
+}
+
+.author{
+  padding: 5% 0 0 0;
+}
+.author p{
+  font-size: 1rem;  
+  padding: 0;
+  text-align: left;
 }
 
 nav {
@@ -110,7 +130,7 @@ img{
 }
 
 article{
-  padding: 5% 25%;
+  padding: 5% 5%;
 }
 
 code{
@@ -129,12 +149,26 @@ pre {
   border-left: 5px solid red;
   margin: 1rem 0;
 }
+
 .attention p{  
   font-weight: 600;
   line-height: 1.5rem;
   padding: 0.5rem 0.5rem;  
 }
 
+.livros{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  article {
+    padding: 5% 25%;
+  } 
+}
 
 
 
