@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-Br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Blog do desenvolvedor Fernando Cassiano. Dicas sobre desenvolvimento front-end e mercado de tecnologia."
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="shortcut icon"
+      href="../assets/favicon.ico"
+      type="image/x-icon"
+    />
+    <title>Fernando Cassiano - Blog</title>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="../assets/logo.svg" alt="Logo" />
+        <h1>Fernando Cassiano</h1>
+      </div>
+      <div class="links">
+        <a href="../">Home</a>        
+        <a href="../livros.html">Livros</a>
+        <a href="#">Ferramentas</a>
+        <a href="#">Sobre</a>
+      </div>
+      <svg
+        width="44"
+        height="18"
+        viewBox="0 0 44 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <line
+          class="line"
+          y1="1"
+          x2="44"
+          y2="1"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="9"
+          x2="27"
+          y2="9"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+        <line
+          class="line"
+          y1="17"
+          x2="11"
+          y2="17"
+          stroke="#1b1b1b"
+          stroke-width="2"
+        />
+      </svg>
+    </nav>
+    <header>
+      <p>FRONT END</p>
+      <h2>Vue.js: Métodos e Event binding</h2>
+      <div class="author">
+        <p>Escrito por <strong>Fernando Cassiano</strong></p>
+        <p>em 12 de Novembro de 2022</p>
+      </div>
+    </header>
+    <article>
+      <p>
+        Seguindo nosso roteiro de estudos sobre Vue.js, neste artigo vamos
+        aprender como criar métodos e responder a eventos ocorridos em nosso
+        template.
+      </p>
+      <p>
+        Para este artigo criaremos um página simples que exibe um contador na
+        tela e um botão que irá atualizar este contador. Usaremos interpolação
+        para obter o conteúdo do atributo counter.
+      </p>
+      <pre>
+&lt;style&gt;
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 22px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 32px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+input[type=button]{        
+    padding: 5px 10px;
+}
+
+#myApp {
+    font-size: 2rem;
+    padding: 10px;
+    text-align: center;
+}
+&lt;/style&gt;
+&lt;body&gt;
+&lt;div id="myApp"&gt;
+    &lt;p&gt;{{counter}}&lt;/p&gt;
+    &lt;input type="button" value="Contador"&gt;        
+&lt;/div&gt;
+&lt;script src="https://unpkg.com/vue@next"&gt;&lt;/script&gt;
+&lt;script src="js.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+      </pre>
+      <p>
+        Na sequência, dentro do arquivo js.js, que vc já referenciou no template
+        iremos criar uma aplicação e vincular seu funcionamento ao elemento div
+        <strong><i>myApp</i></strong
+        >.
+      </p>
+      <pre>
+const app = Vue.createApp({
+    data(){
+        return{
+            counter : 0
+        }
+    }
+});
+    
+app.mount('#myApp');
+      </pre>
+      <figure>
+        <img src="./media/image-10.png" alt="contador" />
+      </figure>
+      <p>
+        Se você não compreende ou tem dúvidas do quê fizemos até aqui, eu fiz um
+        conteúdo um pouco mais detalhado sobre
+        <a href="./vue-js-data-binding.html">Data binding</a>.
+      </p>
+      <p>
+        De volta ao arquivo <strong>js.js</strong>, iremos criar uma nova função
+        para incrementar o conteúdo do atributo <strong>counter</strong> a cada
+        clique do botão Contador.
+      </p>
+      <pre>
+const app = Vue.createApp({
+    data(){
+        return{
+            counter : 0
+        }
+    },
+    methods:{
+        FazerIncremento(){
+            this.counter = this.counter + 1;
+        }
+    }
+});
+      </pre>
+      <p>
+        Para isto utilizamos a palavra reservada <strong>methods</strong>,
+        dentro da instância no nosso app, e criamos a função FazerIncremento que
+        fará o incremento do atributo <strong>counter</strong>. É importante
+        destacar que para ter acesso ao atributo counter, é necessário usar a
+        palavra <strong>"this."</strong>.
+      </p>
+      <p>
+        Agora é hora de voltar ao template e associar a execução da função
+        FazerIncremento com o clique do botão, usando a diretiva
+        <strong>v-on</strong>.
+      </p>
+      <pre>
+&lt;div id="myApp"&gt;
+    &lt;p&gt;{{counter}}&lt;/p&gt;
+    &lt;input type="button" value="Contador" v-on:click="FazerIncremento"&gt;        
+&lt;/div&gt;        
+      </pre>
+      <p>
+        Assim como v-bind, a diretiva v-on também possui um shorthand e pode ser
+        escrita desta outra forma:
+      </p>
+      <pre>
+&lt;div id="myApp"&gt;
+    &lt;p&gt;{{counter}}&lt;/p&gt;
+    &lt;input type="button" value="Contador" @:click="FazerIncremento"&gt;        
+&lt;/div&gt;        
+      </pre>
+      <h3>Alterar a função para receber um parâmetro</h3>
+      <p>
+        Vamos criar um novo atributo chamado parcela na nossa aplicação e na
+        sequência vamos alterar a função <strong>FazerIncremento</strong>, fazendo com que ele
+        espere a chegada de um novo parâmetro e some este valor ao conteúdo do
+        atributo <strong>counter</strong>.
+      </p>
+      <pre>
+methods:{
+    FazerIncremento(parcela){
+        this.counter = this.counter + parcela;
+    }
+}
+      </pre>
+    </article>
+    <footer>
+      <script src="../js.js"></script>
+    </footer>
+  </body>
+</html>
