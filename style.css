@@ -85,8 +85,7 @@ nav {
   display: flex;
   justify-content: space-between;
   padding: 2.5% 5%;  
-  align-items: center;
-  overflow-x: hidden;
+  align-items: center;  
 }
 
 .links{
