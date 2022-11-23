@@ -19,6 +19,10 @@ html {
   color: #3e464f;;
 }
 
+html, body{
+  overflow-x: hidden;
+}
+
 h1,
 h2 {
   font-family: "Argonite";
