@@ -20,12 +20,12 @@ html {
 }
 
 html, body{
-  overflow-x: hidden;fnav
+  overflow-x: hidden;
 }
 
 h1,
 h2 {
-  font-family: "Argonite";
+  font-family: "Argonite",
 }
 
 p, ul, ol,li, code, figure{
@@ -85,6 +85,7 @@ nav {
   display: flex;
   justify-content: space-between;
   padding: 2.5% 5%;  
+  position: relative;
   align-items: center;  
   max-width: 100%;
 }
